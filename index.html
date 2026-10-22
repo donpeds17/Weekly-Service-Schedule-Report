@@ -1,100 +1,195 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Service Schedule</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <main class="app">
+  <div class="app">
     <header class="topbar">
       <div>
         <p class="eyebrow">OPERATIONS PLANNER</p>
         <h1>Weekly Service Schedule</h1>
-        <p class="subtitle">Plan technicians, appointments, and daily activities.</p>
+        <p class="subtitle">Manage service visits, meetings, and personal activities.</p>
       </div>
       <div class="header-actions">
-        <button class="btn secondary" id="todayBtn" type="button">Today</button>
-        <button class="btn primary" id="addBtn" type="button">+ Add appointment</button>
+        <button id="todayBtn" class="btn btn-light">Today</button>
+        <button id="addBtn" class="btn btn-primary">+ Add Appointment</button>
       </div>
     </header>
 
-    <section class="toolbar" aria-label="Schedule controls">
-      <div class="week-control">
-        <button class="icon-btn" id="prevWeek" aria-label="Previous week" type="button">‹</button>
-        <strong id="weekLabel">Week of June 19, 2026</strong>
-        <button class="icon-btn" id="nextWeek" aria-label="Next week" type="button">›</button>
-      </div>
-      <label class="search">
-        <span aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="Search appointments…">
-      </label>
-      <label class="filter-label">View
-        <select id="viewSelect">
-          <option value="week">Week</option>
-          <option value="day">Day</option>
-        </select>
-      </label>
-    </section>
-
-    <section class="legend" aria-label="Appointment categories">
-      <span><i class="dot pest"></i> Pest control / service</span>
-      <span><i class="dot meeting"></i> Meeting / training</span>
-      <span><i class="dot personal"></i> Day off / personal</span>
-      <span class="hint">Select an appointment to edit it.</span>
-    </section>
-
-    <section class="calendar-wrap">
-      <div class="calendar" id="calendar" aria-label="Weekly calendar"></div>
-    </section>
-
-    <p class="footnote">Demo schedule data is editable in this browser. Changes are saved locally on this device.</p>
-  </main>
-
-  <dialog id="eventDialog">
-    <form id="eventForm" method="dialog">
-      <div class="dialog-head">
+    <main>
+      <section class="week-heading">
         <div>
-          <p class="eyebrow">SCHEDULE ITEM</p>
-          <h2 id="dialogTitle">Add appointment</h2>
+          <p class="eyebrow green">WEEKLY OVERVIEW</p>
+          <h2 id="weekTitle">This Week</h2>
         </div>
-        <button type="button" class="icon-btn" id="closeDialog" aria-label="Close">×</button>
+        <div class="week-nav">
+          <button id="prevBtn" class="nav-btn" aria-label="Previous week">‹</button>
+          <button id="nextBtn" class="nav-btn" aria-label="Next week">›</button>
+        </div>
+      </section>
+
+      <section class="stats">
+        <article class="stat-card">
+          <span>Total appointments</span>
+          <strong id="totalCount">0</strong>
+          <small>Selected week</small>
+        </article>
+        <article class="stat-card">
+          <span>Pest control visits</span>
+          <strong id="pestCount">0</strong>
+          <small>Service appointments</small>
+        </article>
+        <article class="stat-card">
+          <span>Meetings</span>
+          <strong id="meetingCount">0</strong>
+          <small>Training and coordination</small>
+        </article>
+        <article class="stat-card">
+          <span>Upcoming appointments</span>
+          <strong id="upcomingCount">0</strong>
+          <small>Within five days</small>
+        </article>
+      </section>
+
+      <section class="main-grid">
+        <section class="panel calendar-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Weekly Calendar</h3>
+              <p class="muted">Click an appointment to edit it.</p>
+            </div>
+            <div class="filters">
+              <input id="searchInput" type="search" placeholder="Search appointments...">
+              <select id="categoryFilter">
+                <option value="all">All categories</option>
+                <option value="pest">Pest Control</option>
+                <option value="meeting">Meeting</option>
+                <option value="personal">Personal</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calendar-scroll">
+            <div id="calendar" class="calendar"></div>
+          </div>
+
+          <div class="legend">
+            <span><i class="dot pest"></i>Pest Control</span>
+            <span><i class="dot meeting"></i>Meeting</span>
+            <span><i class="dot personal"></i>Personal</span>
+          </div>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Alarm Center</h3>
+                <p class="muted">Appointments coming up soon.</p>
+              </div>
+            </div>
+            <div id="alarmList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Category Summary</h3>
+                <p class="muted">Appointments in the selected week.</p>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="categoryChart"></canvas>
+            </div>
+            <p id="chartMessage" class="muted" hidden>
+              Chart unavailable. Check your internet connection.
+            </p>
+          </section>
+        </aside>
+      </section>
+
+      <footer>Schedule data is saved in this browser on this device.</footer>
+    </main>
+  </div>
+
+  <dialog id="appointmentDialog">
+    <form id="appointmentForm">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow green">SCHEDULE DETAILS</p>
+          <h2 id="dialogTitle">Add Appointment</h2>
+        </div>
+        <button type="button" id="closeBtn" class="nav-btn" aria-label="Close">×</button>
       </div>
-      <input type="hidden" id="eventId">
-      <div class="form-grid">
-        <label class="full">Appointment / activity
-          <input id="eventName" required maxlength="100" placeholder="e.g. Client inspection">
-        </label>
-        <label>Day
-          <select id="eventDay" required></select>
-        </label>
-        <label>Category
-          <select id="eventCategory">
-            <option value="pest">Service / inspection</option>
-            <option value="meeting">Meeting / training</option>
-            <option value="personal">Day off / personal</option>
+
+      <input type="hidden" id="appointmentId">
+
+      <label class="field">
+        Appointment title *
+        <input id="titleInput" type="text" maxlength="100"
+               placeholder="Customer or activity name" required>
+      </label>
+
+      <div class="form-row">
+        <label class="field">
+          Category *
+          <select id="categoryInput" required>
+            <option value="pest">Pest Control</option>
+            <option value="meeting">Meeting</option>
+            <option value="personal">Personal</option>
           </select>
         </label>
-        <label>Start time
-          <input id="eventStart" type="time" value="09:00" required>
-        </label>
-        <label>End time
-          <input id="eventEnd" type="time" value="10:00" required>
-        </label>
-        <label class="full">Notes (optional)
-          <textarea id="eventNotes" rows="3" placeholder="Address, assigned staff, or other details"></textarea>
+
+        <label class="field">
+          Location
+          <input id="locationInput" type="text" maxlength="120"
+                 placeholder="Customer, branch, venue">
         </label>
       </div>
+
+      <label class="field">
+        Date *
+        <input id="dateInput" type="date" required>
+      </label>
+
+      <div class="form-row">
+        <label class="field">
+          Start time *
+          <input id="startInput" type="time" value="09:00" required>
+        </label>
+        <label class="field">
+          End time *
+          <input id="endInput" type="time" value="10:00" required>
+        </label>
+      </div>
+
+      <label class="field">
+        Notes
+        <textarea id="notesInput" rows="3" maxlength="500"
+                  placeholder="Additional details"></textarea>
+      </label>
+
+      <p id="formError" class="error" role="alert"></p>
+
       <div class="dialog-actions">
-        <button type="button" class="btn danger" id="deleteBtn">Delete</button>
-        <span class="spacer"></span>
-        <button type="button" class="btn secondary" id="cancelBtn">Cancel</button>
-        <button type="submit" class="btn primary">Save appointment</button>
+        <button type="button" id="deleteBtn" class="btn btn-danger" hidden>
+          Delete
+        </button>
+        <div class="spacer"></div>
+        <button type="button" id="cancelBtn" class="btn btn-light">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Appointment</button>
       </div>
     </form>
   </dialog>
 
+  <div id="toast" class="toast" role="status"></div>
   <script src="./script.js"></script>
 </body>
 </html>
