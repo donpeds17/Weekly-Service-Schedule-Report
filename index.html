@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Service Schedule</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">OPERATIONS PLANNER</p>
+        <h1>Weekly Service Schedule</h1>
+        <p class="subtitle">Plan technicians, appointments, and daily activities.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn secondary" id="todayBtn" type="button">Today</button>
+        <button class="btn primary" id="addBtn" type="button">+ Add appointment</button>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="Schedule controls">
+      <div class="week-control">
+        <button class="icon-btn" id="prevWeek" aria-label="Previous week" type="button">‹</button>
+        <strong id="weekLabel">Week of June 19, 2026</strong>
+        <button class="icon-btn" id="nextWeek" aria-label="Next week" type="button">›</button>
+      </div>
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="Search appointments…">
+      </label>
+      <label class="filter-label">View
+        <select id="viewSelect">
+          <option value="week">Week</option>
+          <option value="day">Day</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="legend" aria-label="Appointment categories">
+      <span><i class="dot pest"></i> Pest control / service</span>
+      <span><i class="dot meeting"></i> Meeting / training</span>
+      <span><i class="dot personal"></i> Day off / personal</span>
+      <span class="hint">Select an appointment to edit it.</span>
+    </section>
+
+    <section class="calendar-wrap">
+      <div class="calendar" id="calendar" aria-label="Weekly calendar"></div>
+    </section>
+
+    <p class="footnote">Demo schedule data is editable in this browser. Changes are saved locally on this device.</p>
+  </main>
+
+  <dialog id="eventDialog">
+    <form id="eventForm" method="dialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">SCHEDULE ITEM</p>
+          <h2 id="dialogTitle">Add appointment</h2>
+        </div>
+        <button type="button" class="icon-btn" id="closeDialog" aria-label="Close">×</button>
+      </div>
+      <input type="hidden" id="eventId">
+      <div class="form-grid">
+        <label class="full">Appointment / activity
+          <input id="eventName" required maxlength="100" placeholder="e.g. Client inspection">
+        </label>
+        <label>Day
+          <select id="eventDay" required></select>
+        </label>
+        <label>Category
+          <select id="eventCategory">
+            <option value="pest">Service / inspection</option>
+            <option value="meeting">Meeting / training</option>
+            <option value="personal">Day off / personal</option>
+          </select>
+        </label>
+        <label>Start time
+          <input id="eventStart" type="time" value="09:00" required>
+        </label>
+        <label>End time
+          <input id="eventEnd" type="time" value="10:00" required>
+        </label>
+        <label class="full">Notes (optional)
+          <textarea id="eventNotes" rows="3" placeholder="Address, assigned staff, or other details"></textarea>
+        </label>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="deleteBtn">Delete</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn secondary" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn primary">Save appointment</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./script.js"></script>
+</body>
+</html>
